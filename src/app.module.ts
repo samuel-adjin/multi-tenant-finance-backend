@@ -12,7 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [DatabaseModule, TenantsModule, UsersModule, AuthModule, AppClsModule, ConfigModule.forRoot({
     isGlobal: true
-  })],
+  }), ],
   controllers: [AppController],
   providers: [AppService],
 })

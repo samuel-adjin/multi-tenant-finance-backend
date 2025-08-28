@@ -14,8 +14,6 @@ export class UserAuthService {
 
      validateLoginRequest = async(payload: ITokenPayload)=>{
         try {
-          // destination = slug:email
-        console.log("Do you get here",payload)
         const slug =  payload.slug;
         const email =  payload.destination;
 
@@ -34,7 +32,15 @@ export class UserAuthService {
                     tenantId: tenant?.id,
                     email
                 }
-
+            },
+            include:{
+                tenant:{
+                    select:{
+                        slug:true,
+                        id:true
+                    }
+                    
+                }
             }
         });
         if (!user) {
