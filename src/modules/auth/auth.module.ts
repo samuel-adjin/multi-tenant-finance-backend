@@ -10,10 +10,11 @@ import { JwtStrategy } from '../../common/strategies/jwt.strategy';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
-import { DatabaseModule } from '../../common/database/database.module';
+import { EmailService } from '../../common/email/email.service';
+import { EmailModule } from '../../common/email/email.module';
 
 @Module({
-  imports: [UserAuthModule, DatabaseModule, CustomerAuthModule, JwtModule.registerAsync({
+  imports: [UserAuthModule, EmailModule,CustomerAuthModule, JwtModule.registerAsync({
     useFactory: async (configService: ConfigService) => ({
       secret: configService.get<string>('JWT_SECRET'),
     }),
@@ -22,10 +23,10 @@ import { DatabaseModule } from '../../common/database/database.module';
   providers: [
     {
       provide: MagicLinkLoginStrategy,
-      useFactory: (userAuthService: UserAuthService, configService: ConfigService) => {
-        return new MagicLinkLoginStrategy(userAuthService, configService);
+      useFactory: (userAuthService: UserAuthService, configService: ConfigService, emailService:EmailService) => {
+        return new MagicLinkLoginStrategy(userAuthService, configService,emailService);
       },
-      inject: [UserAuthService, ConfigService],
+      inject: [UserAuthService, ConfigService,EmailService],
     },
     {
       provide: JwtStrategy,
@@ -39,6 +40,7 @@ import { DatabaseModule } from '../../common/database/database.module';
       useClass: JwtAuthGuard,
     },
     AuthService,
+    
   ],
   controllers: [AuthController],
 })

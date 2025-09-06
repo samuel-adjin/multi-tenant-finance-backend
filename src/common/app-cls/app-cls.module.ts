@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AppClsService } from './app-cls.service';
 import { ClsModule } from 'nestjs-cls';
 
+@Global()
 @Module({
     providers: [AppClsService],
     imports: [

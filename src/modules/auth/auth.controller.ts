@@ -17,6 +17,7 @@ export class AuthController {
     @Public()
     @Post('user/login')
     async login(@Req() req, @Res() res) {
+        req.body.destination = { destination: req.body.destination, slug: req.body.slug }
         this.magicLinkStrategy.send(req, res);
     }
 
@@ -25,7 +26,7 @@ export class AuthController {
     @UseGuards(AuthGuard('magiclogin'))
     async callback(@Req() req) {
         const slug = req.user.tenant.slug;
-        const payload = { role: req.user.role, userId: req.user.id, tenantId: req.user.tenant.id }
+        const payload = { role: req.user.role, userId: req.user.id, tenantId: req.user.tenant.id };
         const accessToken = await this.authService.generateJwt("ACCESS_TOKEN", payload, slug);
         const refreshToken = await this.authService.generateJwt("REFRESH_TOKEN", payload, slug);
         return {

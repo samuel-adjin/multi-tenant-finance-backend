@@ -2,11 +2,10 @@ import { BadRequestException, Injectable, Logger, UnauthorizedException } from '
 import { DatabaseService } from '../../../common/database/database.service';
 import { Prisma } from '@prisma/client';
 import token from "../crypto-token.utils"
-import { AppClsService } from '../../../modules/app-cls/app-cls.service';
+import { AppClsService } from '../../../common/app-cls/app-cls.service';
 import { ConfigService } from '@nestjs/config';
 export type ITokenPayload = {
-    destination: string,
-    slug: string
+    destination: { destination: string, slug: string },
 }
 
 @Injectable()
@@ -17,8 +16,8 @@ export class UserAuthService {
 
     validateLoginRequest = async (payload: ITokenPayload) => {
         try {
-            const slug = payload.slug;
-            const email = payload.destination;
+            const slug = payload.destination.slug;
+            const email = payload.destination.destination;
 
             const tenant = await this.prisma.byPassRls().tenant.findUnique({
                 where: {
@@ -134,6 +133,30 @@ export class UserAuthService {
                 })
             })
             return { success: true, message: 'Account verified' }
+        } catch (error) {
+            const err = error as Error;
+            this.logger.error(`Error occured ${err.message}`)
+        }
+    }
+
+    findUserByEmailSlug = async (email: string, slug: string) => {
+        try {
+            if (!slug || !email) {
+                throw new BadRequestException("slug or email is missing")
+            }
+            const tenant = await this.prisma.byPassRls().tenant.findFirst({ where: { slug }, select: { id: true } });
+            if (!tenant) {
+                throw new BadRequestException("Subddomain not recognized")
+            }
+
+            return await this.prisma.byPassRls().user.findUnique({
+                where: {
+                    tenantId_email: {
+                        email,
+                        tenantId: tenant.id
+                    }
+                }
+            })
         } catch (error) {
             const err = error as Error;
             this.logger.error(`Error occured ${err.message}`)

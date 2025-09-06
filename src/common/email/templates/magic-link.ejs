@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Link</title>
+    <style type="text/css">
+      /* Reset styles for email clients */
+      body,
+      table,
+      td,
+      a {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      table,
+      td {
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        border-collapse: collapse;
+      }
+      img {
+        -ms-interpolation-mode: bicubic;
+        border: 0;
+        height: auto;
+        line-height: 100%;
+        outline: none;
+        text-decoration: none;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .button {
+        background-color: #6366f1;
+        border-radius: 8px;
+        color: #ffffff;
+        display: inline-block;
+        font-family: sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 40px;
+        text-align: center;
+        text-decoration: none;
+        width: 220px;
+        -webkit-text-size-adjust: none;
+      }
+      @media screen and (max-width: 600px) {
+        .container {
+          width: 100% !important;
+        }
+        .mobile-padding {
+          padding-left: 20px !important;
+          padding-right: 20px !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    style="
+      background-color: #f3f4f6;
+      font-family:
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+        sans-serif;
+      margin: 0;
+      padding: 0;
+    "
+  >
+    <table
+      role="presentation"
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      width="100%"
+    >
+      <tr>
+        <td align="center" style="padding: 40px 0">
+          <!-- Main content container -->
+          <table
+            class="container"
+            role="presentation"
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="600"
+            style="
+              background-color: #ffffff;
+              border-radius: 12px;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td align="center" style="padding: 40px 0 20px">
+                <img
+                  src="https://yourcompany.com/logo.png"
+                  alt="Company Logo"
+                  width="160"
+                  style="display: block"
+                />
+              </td>
+            </tr>
+
+            <!-- Content -->
+            <tr>
+              <td
+                class="mobile-padding"
+                style="padding: 0 40px 20px; color: #374151; line-height: 1.6"
+              >
+                <h1
+                  style="
+                    font-size: 24px;
+                    color: #111827;
+                    margin: 0 0 20px;
+                    text-align: center;
+                  "
+                >
+                  Login Link
+                </h1>
+
+                <p style="margin: 0 0 20px">Hello <%= name %>,</p>
+
+                <p style="margin: 0 0 20px">
+                  We received a request to sign in to your account using this
+                  email address. Click the button below to securely log in:
+                </p>
+
+                <!-- Magic link button -->
+                <table
+                  role="presentation"
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  width="100%"
+                  style="margin: 30px 0"
+                >
+                  <tr>
+                    <td align="center">
+                      <a
+                        href="<%= magicLink %>"
+                        class="button"
+                        style="
+                          background-color: #6366f1;
+                          border-radius: 8px;
+                          color: #ffffff;
+                          display: inline-block;
+                          font-family: sans-serif;
+                          font-size: 16px;
+                          font-weight: bold;
+                          line-height: 40px;
+                          text-align: center;
+                          text-decoration: none;
+                          width: 220px;
+                        "
+                        >Sign In Securely</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin: 0 0 20px">
+                  Or copy and paste this URL into your browser:
+                </p>
+
+                <p
+                  style="
+                    margin: 0 0 20px;
+                    word-break: break-all;
+                    color: #6366f1;
+                    background-color: #f9fafb;
+                    padding: 12px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                  "
+                >
+                  <a
+                    href="<%= magicLink %>"
+                    style="color: #6366f1; text-decoration: none"
+                    ><%= magicLink %></a
+                  >
+                </p>
+
+                <p style="margin: 0 0 20px; font-size: 14px; color: #6b7280">
+                  This magic link will expire in 15 minutes and can only be used
+                  once.
+                </p>
+
+                <p style="margin: 0 0 20px; font-size: 14px; color: #6b7280">
+                  If you didn't request this login link, please ignore this
+                  email or contact support if you have concerns.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  padding: 20px 40px;
+                  background-color: #f9fafb;
+                  border-radius: 0 0 12px 12px;
+                "
+              >
+                <table
+                  role="presentation"
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  width="100%"
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      style="color: #6b7280; font-size: 12px; line-height: 1.5"
+                    >
+                      <p style="margin: 0 0 10px">
+                        &copy; 2023 Your Company Name. All rights reserved.
+                      </p>
+                      <p style="margin: 0 0 10px">
+                        <a
+                          href="https://yourcompany.com/privacy"
+                          style="color: #6366f1; text-decoration: none"
+                          >Privacy Policy</a
+                        >
+                        •
+                        <a
+                          href="https://yourcompany.com/terms"
+                          style="color: #6366f1; text-decoration: none"
+                          >Terms of Service</a
+                        >
+                      </p>
+                      <p style="margin: 0">
+                        123 Company Address, City, State 12345
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

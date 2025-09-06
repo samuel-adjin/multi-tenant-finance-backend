@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microfinance App - Email Verification</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a3a8f 0%, #2563eb 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            margin-right: 12px;
+            background: white;
+            color: #2563eb;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .welcome {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: #2d3748;
+            font-weight: 500;
+        }
+        
+        .welcome strong {
+            color: #2563eb;
+            font-weight: 600;
+        }
+        
+        .message {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+            margin: 25px 0;
+        }
+        
+        .message p {
+            margin-bottom: 15px;
+        }
+        
+        .message p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .icon-list {
+            list-style: none;
+            margin: 30px 0;
+        }
+        
+        .icon-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+        
+        .icon-list i {
+            background: #e6f0ff;
+            color: #2563eb;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 18px 45px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 17px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .button:hover {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        .verification-code {
+            background: #f1f5f9;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+            border: 1px dashed #cbd5e0;
+        }
+        
+        .code {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 5px;
+            color: #2563eb;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin: 15px auto;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .link-fallback {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .link-fallback p {
+            margin-bottom: 15px;
+            font-size: 15px;
+            color: #64748b;
+        }
+        
+        .verification-link {
+            word-break: break-all;
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .verification-link:hover {
+            color: #1e40af;
+            text-decoration: underline;
+        }
+        
+        .footer {
+            background: #1e293b;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 0 0 16px 16px;
+        }
+        
+        .footer-content {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .footer p {
+            margin: 12px 0;
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+        
+        .support {
+            margin: 25px 0;
+        }
+        
+        .support a {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .support a:hover {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
+        
+        .social {
+            margin: 20px 0;
+        }
+        
+        .social a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+            font-size: 16px;
+            transition: color 0.2s ease;
+        }
+        
+        .social a:hover {
+            color: #60a5fa;
+        }
+        
+        .copyright {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        /* Responsive styles */
+        @media screen and (max-width: 650px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .button {
+                padding: 16px 35px;
+                width: 90%;
+                text-align: center;
+            }
+            
+            .code {
+                font-size: 24px;
+                letter-spacing: 3px;
+                padding: 12px;
+            }
+            
+            .footer {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="logo-text">MicroFinPro</div>
+                </div>
+                <h1>Email Verification Required</h1>
+                <p>Secure access to your microfinance account</p>
+            </div>
+            
+            <div class="content">
+                <p class="welcome">Hello <strong><%= fullName %></strong>,</p>
+                
+                <p>You have been added to <strong><%= tenant %></strong>'s microfinance platform. To activate your account and access financial services, please verify your email address.</p>
+                
+                <div class="message">
+                    <p><strong>Why verify your email?</strong></p>
+                    <p>Email verification ensures the security of your financial account and allows us to send important updates about your loans, investments, and transactions.</p>
+                </div>
+                
+                <ul class="icon-list">
+                    <li><i class="fas fa-shield-alt"></i> Secure account access</li>
+                    <li><i class="fas fa-money-check-alt"></i> Process transactions</li>
+                    <li><i class="fas fa-bell"></i> Receive important notifications</li>
+                    <li><i class="fas fa-lock"></i> Protect your financial data</li>
+                </ul>
+                
+                <div class="button-container">
+                    <a href="<%= verificationUrl %>" class="button">
+                        <i class="fas fa-envelope-circle-check"></i> Verify Email Address
+                    </a>
+                </div>
+                
+                <!-- <div class="verification-code">
+                    <p>Or use this verification code:</p>
+                    <div class="code">X9FY7K2M</div>
+                    <p>Enter this code on the verification page to confirm your email address.</p>
+                </div> -->
+                
+                <div class="link-fallback">
+                    <p>If the button doesn't work, copy and paste this URL into your browser:</p>
+                    <a href="<%= verificationUrl %>" class="verification-link"><%= verificationUrl %></a>
+                </div>
+                
+                <p style="margin-top: 30px;">This verification link will expire in 24 hours for security reasons. If you need a new link, please request one from the application.</p>
+            </div>
+            
+            <div class="footer">
+                <div class="footer-content">
+                    <p>You're receiving this email because you were added to a microfinance account with <%= tenant %>.</p>
+                    
+                    <div class="support">
+                        <p>Need help? Contact our support team at <a href="mailto:support@microfinpro.com">support@microfinpro.com</a></p>
+                    </div>
+                    
+                    <div class="social">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                    
+                    <div class="copyright">
+                        <p>&copy; 2023 MicroFinPro. All rights reserved.</p>
+                        <p>123 Financial Street, Banking District, 10001</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

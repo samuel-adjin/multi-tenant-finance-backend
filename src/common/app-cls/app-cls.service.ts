@@ -1,6 +1,6 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
-import { IApplicationContext } from '../../common/types/appl-context.type'
+import { IApplicationContext } from '../types/appl-context.type'
 
 
 @Injectable()

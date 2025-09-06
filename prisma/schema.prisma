@@ -29,7 +29,7 @@ model Tenant {
 }
 
 model User {
-  id                String              @id @default(uuid())
+  id                String              @id @default(cuid())
   firstName         String
   otherNames        String
   email             String
