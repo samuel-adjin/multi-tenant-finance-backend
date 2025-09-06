@@ -18,7 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "start:rls": "ts-node common/scripts/setup-rls"
+    "db:setup-rls": "ts-node src/common/scripts/setup-rls.ts",
+    "db:seed": "ts-node src/common/scripts/seed.ts",
+    "db:setup": "npm run db:setup-rls && npm run db:seed"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -29,6 +31,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.14.0",
+    "date-fns-tz": "^3.2.0",
     "nestjs-cls": "^6.0.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",

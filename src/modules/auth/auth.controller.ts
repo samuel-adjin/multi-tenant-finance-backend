@@ -2,12 +2,14 @@ import { Controller, Get, Logger, Post, Req, Res, UseGuards } from '@nestjs/comm
 import { MagicLinkLoginStrategy } from '../../common/strategies/magic-link.strategy';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '../../common/decorators/public.decorator';
+import { UserAuthService } from './user-auth/user-auth.service';
+import { Prisma } from '@prisma/client';
 
 @Controller('auth/')
 export class AuthController {
 
-    constructor(private readonly authService: AuthService, private readonly magicLinkStrategy: MagicLinkLoginStrategy) {
+    constructor(private readonly authService: AuthService, private readonly magicLinkStrategy: MagicLinkLoginStrategy, private readonly userAuthService: UserAuthService) {
 
     }
     private readonly logger: Logger = new Logger(AuthController.name)
@@ -30,4 +32,17 @@ export class AuthController {
             accessToken, refreshToken
         }
     }
+
+    @Public()
+    @Post("verify-account")
+    async verifyAccount(verifyToken: string) {
+        return this.userAuthService.verifyUser(verifyToken);
+    }
+
+    @Post("create-user")
+    async createUser(payload: Prisma.UserCreateInput) {
+        return this.userAuthService.createUser(payload)
+    }
 }
+
+

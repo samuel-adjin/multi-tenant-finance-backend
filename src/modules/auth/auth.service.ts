@@ -1,11 +1,12 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { DatabaseService } from '../../common/database/database.service';
 
 @Injectable()
 export class AuthService {
     private readonly logger: Logger = new Logger(AuthService.name)
-    constructor(private readonly jwtService: JwtService, private readonly configService: ConfigService) {
+    constructor(private readonly jwtService: JwtService, private readonly configService: ConfigService, private readonly prisma:DatabaseService) {
 
     }
 
@@ -16,7 +17,7 @@ export class AuthService {
              const jwtPayload = {
                 ...payload,
                 sub: payload.userId,  
-                type,                
+                type,              
                 iat: Math.floor(Date.now() / 1000), 
             };
             const jwt = await this.jwtService.signAsync(jwtPayload, { expiresIn: token_expiry, issuer: slug, audience })
@@ -27,9 +28,6 @@ export class AuthService {
         }
     }
 
-   
+ 
 }
 
-//  async refreshToken(jwt: string) {
-
-//     }

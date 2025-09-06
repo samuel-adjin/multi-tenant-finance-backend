@@ -21,32 +21,54 @@ model Tenant {
   mobile    String   @unique
   email     String   @unique
   owner     String
-  isActive  Boolean
+  isActive  Boolean  @default(true)
+  timezone  String   @default("Africa/Accra")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   User      User[]
 }
 
 model User {
-  id         String    @id @default(uuid())
-  firstName  String
-  otherNames String
-  email      String
-  mobile     String
-  isVerified Boolean   @default(false)
-  isLocked   Boolean   @default(false)
-  dob        DateTime
-  role       Role      @default(LOAN_OFFICER)
-  lastLogin  DateTime?
-  isActive   Boolean   @default(false)
-  tenant     Tenant    @relation(fields: [tenantId], references: [id])
-  tenantId   String
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id                String              @id @default(uuid())
+  firstName         String
+  otherNames        String
+  email             String
+  mobile            String
+  isVerified        Boolean             @default(false)
+  isLocked          Boolean             @default(false)
+  dob               DateTime
+  role              Role                @default(LOAN_OFFICER)
+  lastLogin         DateTime?
+  isActive          Boolean             @default(false)
+  tenant            Tenant              @relation(fields: [tenantId], references: [id])
+  tenantId          String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  VerificationToken VerificationToken[]
 
   @@unique([tenantId, email])
   @@unique([tenantId, mobile])
   @@index([tenantId])
+}
+
+model VerificationToken {
+  id         String           @id @default(uuid())
+  userId     String
+  tokenHash  String
+  type       VerificationType @default(EMAIL_VERIFICATION)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@index([tokenHash])
+  @@index([userId, type])
+}
+
+enum VerificationType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
 }
 
 enum Role {

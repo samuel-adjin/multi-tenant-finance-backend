@@ -8,7 +8,7 @@ export const tenantExtension = (tenantId: string, role: string) => {
             query: {
                 $allModels: {
                     async $allOperations({ model, operation, args, query }) {
-                        await client.$transaction(async (tx) => {
+                        return await client.$transaction(async (tx) => {
                             if (role === "SUPER_ADMIN") {
                                 await tx.$executeRaw`SELECT set_config('app.is_super', 'true', TRUE)`;
                             } else if (tenantId) {
@@ -30,7 +30,7 @@ export const byPassExtension = () => {
             query: {
                 $allModels: {
                     async $allOperations({ model, operation, args, query }) {
-                        await client.$transaction(async (tx) => {
+                        return await client.$transaction(async (tx) => {
                             await tx.$executeRaw`SELECT set_config('app.is_super', 'true', TRUE)`;
                             return await query(args);
                         })

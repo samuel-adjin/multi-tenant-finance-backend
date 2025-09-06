@@ -10,11 +10,12 @@ import { JwtStrategy } from '../../common/strategies/jwt.strategy';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
+import { DatabaseModule } from '../../common/database/database.module';
 
 @Module({
-  imports: [UserAuthModule, CustomerAuthModule, JwtModule.registerAsync({
+  imports: [UserAuthModule, DatabaseModule, CustomerAuthModule, JwtModule.registerAsync({
     useFactory: async (configService: ConfigService) => ({
-      secret: configService.get<string>('JWT_SECRET '),
+      secret: configService.get<string>('JWT_SECRET'),
     }),
     inject: [ConfigService],
   }),],
@@ -34,11 +35,10 @@ import { AuthService } from './auth.service';
       inject: [ConfigService],
     },
     {
-    provide: APP_GUARD,
-    useClass: JwtAuthGuard,
-  },
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
     AuthService,
-
   ],
   controllers: [AuthController],
 })

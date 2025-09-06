@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AppClsModule } from './modules/app-cls/app-cls.module';
 import { ConfigModule } from '@nestjs/config';
+import { SeedsService } from './common/seeds/seeds.service';
 
 
 @Module({
@@ -14,6 +15,6 @@ import { ConfigModule } from '@nestjs/config';
     isGlobal: true
   }), ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,SeedsService],
 })
 export class AppModule { }
