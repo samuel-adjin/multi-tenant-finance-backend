@@ -23,6 +23,7 @@
     "db:setup": "npm run db:setup-rls && npm run db:seed"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.883.0",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/bullmq": "^11.0.3",
     "@nestjs/common": "^11.0.1",

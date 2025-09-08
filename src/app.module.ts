@@ -7,9 +7,6 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AppClsModule } from './common/app-cls/app-cls.module';
 import { ConfigModule } from '@nestjs/config';
-import { SeedsService } from './common/seeds/seeds.service';
-import { EmailService } from './common/email/email.service';
-import { EmailProcessor } from './common/queue/processors/email.processor';
 import { QueueModule } from './common/queue/queue.module';
 import { EmailModule } from './common/email/email.module';
 
@@ -19,6 +16,6 @@ import { EmailModule } from './common/email/email.module';
     isGlobal: true
   }), ],
   controllers: [AppController],
-  providers: [AppService,SeedsService, EmailService, EmailProcessor],
+  providers: [AppService],
 })
 export class AppModule { }
