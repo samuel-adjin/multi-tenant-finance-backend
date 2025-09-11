@@ -12,9 +12,10 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { EmailService } from '../../common/email/email.service';
 import { EmailModule } from '../../common/email/email.module';
+import { RolesGuard } from '../../common/guards/roles.guard';
 
 @Module({
-  imports: [UserAuthModule, EmailModule,CustomerAuthModule, JwtModule.registerAsync({
+  imports: [UserAuthModule, EmailModule, CustomerAuthModule, JwtModule.registerAsync({
     useFactory: async (configService: ConfigService) => ({
       secret: configService.get<string>('JWT_SECRET'),
     }),
@@ -23,10 +24,10 @@ import { EmailModule } from '../../common/email/email.module';
   providers: [
     {
       provide: MagicLinkLoginStrategy,
-      useFactory: (userAuthService: UserAuthService, configService: ConfigService, emailService:EmailService) => {
-        return new MagicLinkLoginStrategy(userAuthService, configService,emailService);
+      useFactory: (userAuthService: UserAuthService, configService: ConfigService, emailService: EmailService) => {
+        return new MagicLinkLoginStrategy(userAuthService, configService, emailService);
       },
-      inject: [UserAuthService, ConfigService,EmailService],
+      inject: [UserAuthService, ConfigService, EmailService],
     },
     {
       provide: JwtStrategy,
@@ -39,8 +40,12 @@ import { EmailModule } from '../../common/email/email.module';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
     AuthService,
-    
+
   ],
   controllers: [AuthController],
 })

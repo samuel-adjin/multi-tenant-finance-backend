@@ -16,6 +16,6 @@ import { EmailModule } from './common/email/email.module';
     isGlobal: true
   }), ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,],
 })
 export class AppModule { }
