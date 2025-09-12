@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { DatabaseService } from '../../../common/database/database.service';
 import { Prisma } from '@prisma/client';
 import token from "../crypto-token.utils"
@@ -69,7 +69,22 @@ export class UserAuthService {
             if (!payload) {
                 throw new BadRequestException("Invalid user payload")
             }
-            await this.prisma.withTenant().$transaction(async (tx) => {
+            const tenantId = this.appCls.getCurrentTenantId();
+            if (!tenantId) throw new UnauthorizedException("Tenant Id not found")
+            const existingUser = await this.prisma.withTenant().user.findUnique({
+                where: {
+                    tenantId_email: {
+                        email: payload.email,
+                        tenantId
+                    }
+                }
+            });
+
+            if (existingUser) {
+                throw new ConflictException("User with this email already exists");
+            }
+            const { user, rawToken } = await this.prisma.withTenant().$transaction(async (tx) => {
+
                 const user = await tx.user.create({
                     data: payload
                 })
@@ -83,18 +98,20 @@ export class UserAuthService {
                         tokenHash,
                     }
                 })
-                const host = this.config.get<string>('HOST_URL')
-                const href = `${host}/verify?token=${rawToken}`
-                await this.emailService.sendEmail({
-                    to: user?.email,
-                    subject: 'Account Verfication',
-                    template: 'account-verification',
-                    context: {
-                        name: user.firstName,
-                        verificationUrl: href
-                    }
-                });
+
+                return { user, rawToken: encodeURIComponent(rawToken) }
             })
+            const host = this.config.get<string>('HOST_URL')
+            const href = `${host}/verify?token=${rawToken}`
+            await this.emailService.sendEmail({
+                to: user?.email,
+                subject: 'Account Verfication',
+                template: 'account-verification',
+                context: {
+                    name: user.firstName,
+                    verificationUrl: href
+                }
+            });
             return { success: true, message: 'User created' }
 
         } catch (error) {

@@ -66,9 +66,35 @@ model VerificationToken {
   @@index([userId, type])
 }
 
+model Outbox {
+  id           String       @id @default(cuid())
+  type         OutBoxType   @default(ACCOUNT_VERIFICATION)
+  payload      Json
+  attemptCount Int          @default(0)
+  maxAttempts  Int          @default(5)
+  status       OutBoxStatus @default(PENDING)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  processedAt  DateTime?
+  error        String?
+
+  @@index([status, type, createdAt])
+}
+
+enum OutBoxStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum OutBoxType {
+  ACCOUNT_VERIFICATION
+  MAGIC_LINK
+}
+
 enum VerificationType {
   EMAIL_VERIFICATION
-  PASSWORD_RESET
 }
 
 enum Role {
