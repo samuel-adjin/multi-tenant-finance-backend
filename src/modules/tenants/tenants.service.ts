@@ -66,9 +66,38 @@ export class TenantsService {
         }
     }
 
-    //paginate records
-    getTenants = async () => {
 
+    getTenants = async (pageSize: number = 10, page: number = 1) => {
+        try {
+            pageSize = Math.max(pageSize, 1);
+            page = Math.max(page, 1);
+            const skip = (page - 1) * pageSize;
+            const totalCount = await this.prisma.withTenant().tenant.count();
+            const totalPages = Math.ceil(totalCount / pageSize) || 1;
+            const tenants = await this.prisma.withTenant().tenant.findMany({
+                orderBy: {
+                    createdAt: 'asc'
+                },
+                skip,
+                take: pageSize
+            })
+            const hasNextPage = page < totalCount
+            const hasPreviousPage = page > 1
+            return {
+                success: true, items: tenants,
+                pagination: {
+                    currentPage: page,
+                    pageSize,
+                    totalCount,
+                    totalPages,
+                    hasNextPage,
+                    hasPreviousPage,
+                }
+            }
+        } catch (error) {
+            const err = error as Error;
+            this.logger.error(`Error occured ${err.message}`)
+        }
     }
 }
 

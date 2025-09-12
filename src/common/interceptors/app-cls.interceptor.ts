@@ -17,7 +17,6 @@ export class AppClsInterceptor implements NestInterceptor {
             [context.getHandler(), context.getClass()]
         );
         if (skip) {
-            console.log('AppClsInterceptor ctor — reflecto')
              return next.handle(); 
         }
         const request = context.switchToHttp().getRequest();
@@ -29,7 +28,7 @@ export class AppClsInterceptor implements NestInterceptor {
         const appClsContext: IApplicationContext = {
             tenantId: user.tenantId || "",
             role: user.role || "",
-            userId: user.userId || ""
+            userId: user.id || ""
 
         }
         this.appCls.setApplicationContext(appClsContext);

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { DatabaseService } from '../../../common/database/database.service';
 import { Prisma } from '@prisma/client';
 import token from "../crypto-token.utils"
@@ -165,6 +165,83 @@ export class UserAuthService {
                     }
                 }
             })
+        } catch (error) {
+            const err = error as Error;
+            this.logger.error(`Error occured ${err.message}`)
+        }
+    }
+
+    async getAuthUser() {
+        try {
+            const userId = this.appCls.getCurrentUserId();
+            const user = await this.prisma.withTenant().user.findUnique({
+                where: {
+                    id: userId
+                }
+            })
+            if (!user) {
+                throw new NotFoundException("User not found");
+            }
+            return { success: true, result: user }
+        } catch (error) {
+            const err = error as Error;
+            this.logger.error(`Error occured ${err.message}`)
+        }
+    }
+
+    async getAllActiveUsers(pageSize: number = 10, page: number = 1) {
+        try {
+            pageSize = Math.max(pageSize, 1);
+            page = Math.max(page, 1);
+            const skip = (page - 1) * pageSize;
+            const totalCount = await this.prisma.withTenant().user.count();
+            const totalPages = Math.ceil(totalCount / pageSize) || 1;
+            const hasNextPage = page < totalCount;
+            const hasPreviousPage = page > 1;
+            const users = await this.prisma.withTenant().user.findMany({
+                where: {
+                    isVerified: true,
+                    isLocked: false
+                },
+                orderBy: {
+                    createdAt: 'asc'
+                },
+                skip,
+                take: pageSize
+            })
+            return {
+                success: true, items: users,
+                pagination: {
+                    currentPage: page,
+                    pageSize,
+                    totalCount,
+                    totalPages,
+                    hasNextPage,
+                    hasPreviousPage,
+                }
+            }
+        } catch (error) {
+            const err = error as Error;
+            this.logger.error(`Error occured ${err.message}`)
+        }
+    }
+
+    async deleteUser(id: string) {
+        try {
+            const user = await this.prisma.withTenant().user.findUnique({
+                where: {
+                    id
+                }
+            });
+            if (!user) {
+                throw new NotFoundException("User does not exist");
+            }
+            await this.prisma.withTenant().user.delete({
+                where: {
+                    id
+                }
+            })
+            return { success: true, result: "User deleted succcessfully" }
         } catch (error) {
             const err = error as Error;
             this.logger.error(`Error occured ${err.message}`)
