@@ -2,12 +2,24 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor, Unauthorize
 import { Observable } from "rxjs";
 import { AppClsService } from "../app-cls/app-cls.service";
 import { IApplicationContext } from "../types/appl-context.type";
+import { SKIP_INTERCEPTOR_KEY } from "../decorators/skipInterceptor.decorator";
+import { Reflector } from "@nestjs/core";
 
 
 @Injectable()
 export class AppClsInterceptor implements NestInterceptor {
-    constructor(private readonly appCls: AppClsService) { }
+    constructor(private readonly appCls: AppClsService,private readonly reflector: Reflector) { 
+    }
+    
     intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
+        const skip: boolean = this.reflector.getAllAndOverride<boolean>(
+            SKIP_INTERCEPTOR_KEY,
+            [context.getHandler(), context.getClass()]
+        );
+        if (skip) {
+            console.log('AppClsInterceptor ctor — reflecto')
+             return next.handle(); 
+        }
         const request = context.switchToHttp().getRequest();
         const user = request.user;
         if (!user) {

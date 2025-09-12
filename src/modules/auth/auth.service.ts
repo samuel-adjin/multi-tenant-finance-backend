@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from '../../common/database/database.service';
 
+type TokenType = "ACCESS_TOKEN" | "REFRESH_TOKEN" | "NEW_ACCESS_TOKEN"
 @Injectable()
 export class AuthService {
     private readonly logger: Logger = new Logger(AuthService.name)
@@ -10,10 +11,17 @@ export class AuthService {
 
     }
 
-    async generateJwt(type: "ACCESS_TOKEN" | "REFRESH_TOKEN", payload: { role: string, userId: string, tenantId?: string }, slug: string) {
+
+
+    async generateJwt(type: TokenType, payload: { role: string, userId: string, tenantId?: string }, slug: string) {
         try {
+            const tokenTypeObject: Record<TokenType, string> = {
+                ACCESS_TOKEN: this.configService.get<string>("ACCESS_TOKEN_EXPIRY", ''),
+                REFRESH_TOKEN: this.configService.get<string>("REFRESH_TOKEN_EXPIRY", ''),
+                NEW_ACCESS_TOKEN: this.configService.get<string>("NEW_ACCESS_TOKEN_EXPIRY", '')
+            }
             const audience = this.configService.get<string>("AUDIENCE")
-            const token_expiry = type == "ACCESS_TOKEN" ? this.configService.get<string>("ACCESS_TOKEN_EXPIRY") : this.configService.get<string>("REFRESH_TOKEN_EXPIRY");
+            const token_expiry = tokenTypeObject[type]
             const jwtPayload = {
                 ...payload,
                 sub: payload.userId,

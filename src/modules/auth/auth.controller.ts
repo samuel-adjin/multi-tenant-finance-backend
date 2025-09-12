@@ -1,20 +1,23 @@
-import { Controller, Get, Logger, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { MagicLinkLoginStrategy } from '../../common/strategies/magic-link.strategy';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Public } from '../../common/decorators/public.decorator';
 import { UserAuthService } from './user-auth/user-auth.service';
 import { Prisma } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
+import { skipInterceptor } from '../../common/decorators/skipInterceptor.decorator';
 
 @Controller('auth/')
 export class AuthController {
 
-    constructor(private readonly authService: AuthService, private readonly magicLinkStrategy: MagicLinkLoginStrategy, private readonly userAuthService: UserAuthService) {
+    constructor(private readonly authService: AuthService, private readonly magicLinkStrategy: MagicLinkLoginStrategy, private readonly userAuthService: UserAuthService, private readonly configService: ConfigService) {
 
     }
     private readonly logger: Logger = new Logger(AuthController.name)
 
     @Public()
+    @skipInterceptor()
     @Post('user/login')
     async login(@Req() req, @Res() res) {
         req.body.destination = { destination: req.body.destination, slug: req.body.slug }
@@ -26,11 +29,14 @@ export class AuthController {
     @UseGuards(AuthGuard('magiclogin'))
     async callback(@Req() req) {
         const slug = req.user.tenant.slug;
-        const payload = { role: req.user.role, userId: req.user.id, tenantId: req.user.tenant.id };
-        const accessToken = await this.authService.generateJwt("ACCESS_TOKEN", payload, slug);
+        const payload = { role: req.user.role, userId: req.user.id, tenantId: req.user.tenant.id, };
+        const accessToken = await this.authService.generateJwt("ACCESS_TOKEN", payload, slug,);
         const refreshToken = await this.authService.generateJwt("REFRESH_TOKEN", payload, slug);
+
         return {
-            accessToken, refreshToken
+            accessToken,
+            refreshToken,
+            role: req.user.role
         }
     }
 
@@ -41,7 +47,7 @@ export class AuthController {
     }
 
     @Post("create-user")
-    async createUser(payload: Prisma.UserCreateInput) {
+    async createUser(@Body() payload: Prisma.UserCreateInput) {
         return this.userAuthService.createUser(payload)
     }
 }

@@ -4,13 +4,14 @@ import { Prisma } from '@prisma/client';
 import token from "../crypto-token.utils"
 import { AppClsService } from '../../../common/app-cls/app-cls.service';
 import { ConfigService } from '@nestjs/config';
+import { EmailService } from '../../../common/email/email.service';
 export type ITokenPayload = {
     destination: { destination: string, slug: string },
 }
 
 @Injectable()
 export class UserAuthService {
-    constructor(private readonly prisma: DatabaseService, private readonly appCls: AppClsService, private readonly config: ConfigService) { }
+    constructor(private readonly prisma: DatabaseService, private readonly appCls: AppClsService, private readonly config: ConfigService, private readonly emailService: EmailService) { }
     private readonly logger: Logger = new Logger(UserAuthService.name);
 
 
@@ -82,10 +83,17 @@ export class UserAuthService {
                         tokenHash,
                     }
                 })
-                //sendEmail
                 const host = this.config.get<string>('HOST_URL')
-                const url = `${host}/verify?token=${rawToken}`
-                // email service to send email
+                const href = `${host}/verify?token=${rawToken}`
+                await this.emailService.sendEmail({
+                    to: user?.email,
+                    subject: 'Account Verfication',
+                    template: 'account-verification',
+                    context: {
+                        name: user.firstName,
+                        verificationUrl: href
+                    }
+                });
             })
             return { success: true, message: 'User created' }
 

@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Verify Your Account</title>
+  <style>
+    /* Base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f7f9fc;
+      color: #333333;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .email-wrapper {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    
+    .email-header {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      padding: 30px 20px;
+      text-align: center;
+    }
+    
+    .email-header h1 {
+      color: white;
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .email-body {
+      padding: 40px 30px;
+    }
+    
+    .greeting {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #374151;
+    }
+    
+    .message {
+      font-size: 16px;
+      color: #6b7280;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    
+    .button-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    
+    .verify-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: white;
+      text-decoration: none;
+      padding: 16px 40px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .verify-button:hover {
+      box-shadow: 0 6px 10px rgba(79, 70, 229, 0.3);
+      transform: translateY(-2px);
+    }
+    
+    .alternate-link {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .url-text {
+      font-size: 14px;
+      color: #9ca3af;
+      word-break: break-all;
+      background-color: #f9fafb;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .support {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    
+    .email-footer {
+      padding: 20px;
+      text-align: center;
+      background-color: #f9fafb;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+    
+    .social-links {
+      margin: 15px 0;
+    }
+    
+    .social-link {
+      display: inline-block;
+      margin: 0 10px;
+      color: #6366f1;
+      text-decoration: none;
+    }
+    
+    /* Responsive styles */
+    @media only screen and (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .email-body {
+        padding: 30px 20px;
+      }
+      
+      .email-header h1 {
+        font-size: 24px;
+      }
+      
+      .verify-button {
+        padding: 14px 30px;
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="email-wrapper">
+      <div class="email-header">
+        <h1>Verify Your Account</h1>
+      </div>
+      
+      <div class="email-body">
+        <p class="greeting">Hello <%= name %>,</p>
+        
+        <p class="message">
+          Thank you for signing up! To complete your registration and verify your account, 
+          please click the button below. This helps us ensure the security of your account.
+        </p>
+        
+        <div class="button-container">
+          <a href="<%= verificationUrl %>" class="verify-button" target="_blank">Verify My Account</a>
+        </div>
+        
+        <div class="alternate-link">
+          <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">
+            If the button doesn't work, copy and paste this URL into your browser:
+          </p>
+          <p class="url-text"><%= verificationUrl %></p>
+        </div>
+        
+        <div class="support">
+          <p>If you didn't create an account with us, please ignore this email.</p>
+          <p>Need help? Contact our support team at <a href="mailto:support@yourcompany.com" style="color: #6366f1;">support@yourcompany.com</a></p>
+        </div>
+      </div>
+      
+      <div class="email-footer">
+        <p>© <%= new Date().getFullYear() %> Your Company Name. All rights reserved.</p>
+        
+        <div class="social-links">
+          <a href="#" class="social-link">Twitter</a>
+          <a href="#" class="social-link">Facebook</a>
+          <a href="#" class="social-link">Instagram</a>
+        </div>
+        
+        <p>
+          You're receiving this email because you signed up for an account with Your Company Name.
+          <br />
+          <a href="#" style="color: #6366f1;">Unsubscribe</a> or <a href="#" style="color: #6366f1;">update preferences</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
