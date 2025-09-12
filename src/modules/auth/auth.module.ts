@@ -7,12 +7,13 @@ import { AuthController } from './auth.controller';
 import { MagicLinkLoginStrategy } from '../../common/strategies/magic-link.strategy';
 import { UserAuthService } from './user-auth/user-auth.service';
 import { JwtStrategy } from '../../common/strategies/jwt.strategy';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { EmailService } from '../../common/email/email.service';
 import { EmailModule } from '../../common/email/email.module';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { AppClsInterceptor } from 'src/common/interceptors/app-cls.inteceptor';
 
 @Module({
   imports: [UserAuthModule, EmailModule, CustomerAuthModule, JwtModule.registerAsync({
@@ -43,6 +44,10 @@ import { RolesGuard } from '../../common/guards/roles.guard';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AppClsInterceptor,
     },
     AuthService,
 
