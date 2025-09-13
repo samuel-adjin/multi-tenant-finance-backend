@@ -7,16 +7,18 @@ import { AuthController } from './auth.controller';
 import { MagicLinkLoginStrategy } from '../../common/strategies/magic-link.strategy';
 import { UserAuthService } from './user-auth/user-auth.service';
 import { JwtStrategy } from '../../common/strategies/jwt.strategy';
-import { APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { EmailService } from '../../common/email/email.service';
 import { EmailModule } from '../../common/email/email.module';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { AppClsInterceptor } from '../../common/interceptors/app-cls.interceptor';
+import { UsersService } from '../users/users.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [UserAuthModule, EmailModule, CustomerAuthModule, JwtModule.registerAsync({
+  imports: [UserAuthModule, UsersModule, EmailModule, CustomerAuthModule, JwtModule.registerAsync({
     useFactory: async (configService: ConfigService) => ({
       secret: configService.get<string>('JWT_SECRET'),
     }),
@@ -25,8 +27,8 @@ import { AppClsInterceptor } from '../../common/interceptors/app-cls.interceptor
   providers: [
     {
       provide: MagicLinkLoginStrategy,
-      useFactory: (userAuthService: UserAuthService, configService: ConfigService, emailService: EmailService) => {
-        return new MagicLinkLoginStrategy(userAuthService, configService, emailService);
+      useFactory: (userService: UsersService, configService: ConfigService, emailService: EmailService) => {
+        return new MagicLinkLoginStrategy(userService, configService, emailService);
       },
       inject: [UserAuthService, ConfigService, EmailService],
     },
@@ -47,8 +49,8 @@ import { AppClsInterceptor } from '../../common/interceptors/app-cls.interceptor
     },
     {
       provide: APP_INTERCEPTOR,
-      useClass: AppClsInterceptor, 
-       scope: Scope.REQUEST
+      useClass: AppClsInterceptor,
+      scope: Scope.REQUEST
     },
     AuthService,
 

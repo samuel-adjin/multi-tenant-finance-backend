@@ -7,12 +7,8 @@ type TokenType = "ACCESS_TOKEN" | "REFRESH_TOKEN" | "NEW_ACCESS_TOKEN"
 @Injectable()
 export class AuthService {
     private readonly logger: Logger = new Logger(AuthService.name)
-    constructor(private readonly jwtService: JwtService, private readonly configService: ConfigService, private readonly prisma: DatabaseService) {
-
-    }
-
-
-
+    constructor(private readonly jwtService: JwtService, private readonly configService: ConfigService, private readonly prisma: DatabaseService) { }
+    
     async generateJwt(type: TokenType, payload: { role: string, userId: string, tenantId?: string }, slug: string) {
         try {
             const tokenTypeObject: Record<TokenType, string> = {

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
 import { Prisma } from '@prisma/client';
 
@@ -21,7 +21,8 @@ export class TenantsController {
         return this.tenantService.getTenant(tenantId)
     }
 
-    async getTenants() {
-        return this.tenantService.getTenants();
+    @Get()
+    async getTenants(@Query() query: { pageSize: number, page: number }) {
+        return this.tenantService.getTenants(query.pageSize, query.page);
     }
 }
