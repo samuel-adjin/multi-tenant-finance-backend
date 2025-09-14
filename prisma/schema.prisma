@@ -15,20 +15,20 @@ datasource db {
 }
 
 model Tenant {
-  id            String         @id @default(cuid())
-  name          String
-  slug          String         @unique
-  mobile        String         @unique
-  email         String         @unique
-  owner         String
-  isActive      Boolean        @default(true)
-  timezone      String         @default("Africa/Accra")
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  User          User[]
-  Customer      Customer[]
-  SequenceTable SequenceTable?
-  Prefix        Prefix?
+  id        String     @id @default(cuid())
+  name      String
+  slug      String     @unique
+  mobile    String     @unique
+  email     String     @unique
+  owner     String
+  isActive  Boolean    @default(true)
+  timezone  String     @default("Africa/Accra")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  User      User[]
+  Customer  Customer[]
+  Sequence  Sequence?
+  Prefix    Prefix?
 
   @@index([slug])
 }
