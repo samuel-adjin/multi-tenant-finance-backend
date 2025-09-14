@@ -27,10 +27,10 @@ import { UsersModule } from '../users/users.module';
   providers: [
     {
       provide: MagicLinkLoginStrategy,
-      useFactory: (userService: UsersService, configService: ConfigService, emailService: EmailService) => {
-        return new MagicLinkLoginStrategy(userService, configService, emailService);
+      useFactory: (userService: UsersService, configService: ConfigService, emailService: EmailService, userAuthService:UserAuthService) => {
+        return new MagicLinkLoginStrategy(userService, configService, emailService,userAuthService);
       },
-      inject: [UserAuthService, ConfigService, EmailService],
+      inject: [UsersService, ConfigService, EmailService,UserAuthService],
     },
     {
       provide: JwtStrategy,

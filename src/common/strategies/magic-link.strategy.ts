@@ -5,6 +5,7 @@ import MagicLoginStrategy from "passport-magic-login";
 import { ITokenPayload, UserAuthService } from "../../modules/auth/user-auth/user-auth.service";
 import { ConfigService } from "@nestjs/config";
 import { EmailService } from "../email/email.service";
+import { UsersService } from "../../modules/users/users.service";
 
 export type IPayload = {
   destination: string;
@@ -14,12 +15,12 @@ export type IPayload = {
 @Injectable()
 export class MagicLinkLoginStrategy extends PassportStrategy(MagicLoginStrategy as any, 'magiclogin') {
   private readonly logger: Logger = new Logger(MagicLinkLoginStrategy.name)
-  constructor(private readonly userAuthService: UserAuthService, private readonly configService: ConfigService, private readonly emailService: EmailService) {
+  constructor(private readonly userService: UsersService, private readonly configService: ConfigService, private readonly emailService: EmailService, private readonly userAuthService:UserAuthService) {
     super({
       jwtOptions: { expiresIn: configService.get<string>('MAGIC_LOGIN_JWT_EXPIRATION') || "15m" },
       secret: configService.get<string>('MAGIC_LOGIN_JWT_SECRET') || "jwtConstants.secret",
       sendMagicLink: async (destination: IPayload, href: string) => {
-        const user = await userAuthService.findUserByEmailSlug(destination.destination, destination.slug)
+        const user = await userService.findUserByEmailSlug(destination.destination, destination.slug)
         if (user) {
           await this.emailService.sendEmail({
             to: user?.email,

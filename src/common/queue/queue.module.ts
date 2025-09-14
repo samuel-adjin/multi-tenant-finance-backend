@@ -1,10 +1,9 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { QueueService } from './queue.service';
 import { BullModule } from '@nestjs/bullmq';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { queueConfig } from './config/queue.config';
 
-@Global()
 @Module({
   providers: [QueueService],
   exports: [BullModule, QueueService],

@@ -15,36 +15,43 @@ datasource db {
 }
 
 model Tenant {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   name      String
-  slug      String   @unique
-  mobile    String   @unique
-  email     String   @unique
+  slug      String     @unique
+  mobile    String     @unique
+  email     String     @unique
   owner     String
-  isActive  Boolean  @default(true)
-  timezone  String   @default("Africa/Accra")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isActive  Boolean    @default(true)
+  timezone  String     @default("Africa/Accra")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   User      User[]
+  Customer  Customer[]
+
+  @@index([slug])
 }
 
 model User {
-  id                String              @id @default(cuid())
-  firstName         String
-  otherNames        String
-  email             String
-  mobile            String
-  isVerified        Boolean             @default(false)
-  isLocked          Boolean             @default(false)
-  dob               DateTime
-  role              Role                @default(LOAN_OFFICER)
-  lastLogin         DateTime?
-  isActive          Boolean             @default(false)
-  tenant            Tenant              @relation(fields: [tenantId], references: [id])
-  tenantId          String
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  VerificationToken VerificationToken[]
+  id                   String              @id @default(cuid())
+  firstName            String
+  otherNames           String
+  email                String
+  mobile               String
+  isVerified           Boolean             @default(false)
+  isLocked             Boolean             @default(false)
+  dob                  DateTime
+  role                 Role                @default(LOAN_OFFICER)
+  lastLogin            DateTime?
+  isActive             Boolean             @default(false)
+  tenant               Tenant              @relation(fields: [tenantId], references: [id],onDelete: Restrict)
+  tenantId             String
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  VerificationToken    VerificationToken[]
+  kycVerifiedCustomers Customer[]          @relation("CustomerKycVerifier")
+  customersCreated     Customer[]          @relation("CustomerCreatedBy")
+  documentsVerified    KycDocument[]       @relation("DocumentVerifier")
+  documentsUploaded    KycDocument[]       @relation("DocumentUploader")
 
   @@unique([tenantId, email])
   @@unique([tenantId, mobile])
@@ -66,6 +73,133 @@ model VerificationToken {
   @@index([userId, type])
 }
 
+model Customer {
+  id                String              @id @default(cuid())
+  tenantId          String
+  tenant            Tenant              @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  customerNumber    String
+  type              CustomerType        @default(INDIVIDUAL)
+  externalReference String?
+  externalSource    String?
+  firstName         String
+  lastName          String
+  otherNames        String?
+  gender            Gender?
+  dob               DateTime?
+  maritalStatus     MaritalStatus
+  spouse            String?
+  spouseOccupation  String?
+  email             String?
+  mobile            String?
+  nationalId        String?
+  nationalIdType    IdentificationType?
+  kycVerified       Boolean             @default(false)
+  kycStatus         KycStatus           @default(PENDING)
+  kycVerifiedAt     DateTime?
+  kycVerifiedById   String?
+  kycVerifiedBy     User?               @relation("CustomerKycVerifier", fields: [kycVerifiedById], references: [id], onDelete: SetNull)
+  status            CustomerStatus      @default(ACTIVE)
+  createdById       String?
+  createdBy         User?               @relation("CustomerCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  addresses         Address[]
+  nextOfKins        NextOfKin[]
+  business          CustomerBusiness?
+  kycDocuments      KycDocument[]
+  isDeleted         Boolean             @default(false)
+  deletedAt         DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@unique([tenantId, customerNumber])
+  @@unique([tenantId, externalReference])
+  @@unique([tenantId, nationalId])
+  @@index([tenantId, mobile])
+  @@index([tenantId, email])
+  @@index([tenantId, nationalId])
+}
+
+model CustomerBusiness {
+  id                 String    @id @default(cuid())
+  customerId         String    @unique
+  customer           Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessName       String
+  averageSalary      Decimal?  @db.Decimal(15, 2)
+  registrationNumber String?
+  taxId              String?
+  industry           String?
+  incorporationDate  DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([customerId])
+}
+
+model NextOfKin {
+  id           String       @id @default(cuid())
+  customer     Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId   String
+  fullName     String
+  relationship Relationship
+  mobile       String?
+  email        String?
+  addressId    String
+  occupation   String?
+  isPrimary    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([customerId])
+}
+
+model Address {
+  id             String      @id @default(cuid())
+  customer       Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId     String
+  type           AddressType @default(HOME)
+  line1          String // House number, street
+  line2          String? // Additional address
+  city           String
+  region         String?
+  postalCode     String?
+  country        String      @default("GH")
+  digitalAddress String? // Ghana Post GPS
+  landmark       String?
+  isPrimary      Boolean     @default(false)
+  isVerified     Boolean     @default(false)
+  verifiedAt     DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([customerId])
+}
+
+model KycDocument {
+  id                String          @id @default(cuid())
+  customerId        String
+  customer          Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  documentType      KycDocumentType
+  fileName          String
+  s3Key             String
+  s3Bucket          String
+  fileSize          Int
+  mimeType          String
+  status            DocumentStatus  @default(PENDING)
+  verificationNotes String?
+  verifiedAt        DateTime?
+  verifiedById      String?
+  verifiedBy        User?           @relation("DocumentVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  uploadedById      String?
+  uploadedBy        User?           @relation("DocumentUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  isDeleted         Boolean         @default(false)
+  deletedAt         DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([customerId, documentType])
+  @@index([status])
+  @@index([s3Key])
+}
+
 model Outbox {
   id           String       @id @default(cuid())
   type         OutBoxType   @default(ACCOUNT_VERIFICATION)
@@ -79,6 +213,81 @@ model Outbox {
   error        String?
 
   @@index([status, type, createdAt])
+}
+
+enum KycDocumentType {
+  PASSPORT_PHOTO
+  NATIONAL_ID_FRONT
+  NATIONAL_ID_BACK
+  DRIVER_LICENSE_FRONT
+  DRIVER_LICENSE_BACK
+  BUSINESS_REGISTRATION
+  PROOF_OF_ADDRESS
+  BANK_STATEMENT
+  UTILITY_BILL
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
+  REQUIRES_RESUBMISSION
+}
+
+enum Relationship {
+  PARENT
+  CHILD
+  SIBLING
+  SPOUSE
+  RELATIVE
+  FRIEND
+  GUARDIAN
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  OTHER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  BLACKLISTED
+}
+
+enum AddressType {
+  HOME
+  WORK
+  OTHER
+}
+
+enum IdentificationType {
+  NATIONAL_ID
+  PASSPORT
+  DRIVER_LICENSE
+  BUSINESS_REGISTRATION
+}
+
+enum CustomerType {
+  INDIVIDUAL
+  BUSINESS
+}
+
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  ENHANCED_DUE_DILIGENCE
 }
 
 enum OutBoxStatus {

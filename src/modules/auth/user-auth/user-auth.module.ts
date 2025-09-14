@@ -5,7 +5,7 @@ import { EmailModule } from '../../../common/email/email.module';
 
 @Module({
   providers: [UserAuthService],
-  exports:[UserAuthService],
-  imports:[EmailModule],
+  exports: [UserAuthService],
+  imports: [EmailModule],
 })
-export class UserAuthModule {}
+export class UserAuthModule { }

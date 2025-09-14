@@ -5,7 +5,6 @@ import { AppClsModule } from '../app-cls/app-cls.module';
 @Global()
 @Module({
   providers: [DatabaseService],
-  imports:[AppClsModule],
-  exports:[DatabaseService]
+  exports: [DatabaseService]
 })
-export class DatabaseModule {}
+export class DatabaseModule { }
