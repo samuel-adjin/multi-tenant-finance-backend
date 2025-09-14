@@ -15,18 +15,20 @@ datasource db {
 }
 
 model Tenant {
-  id        String     @id @default(cuid())
-  name      String
-  slug      String     @unique
-  mobile    String     @unique
-  email     String     @unique
-  owner     String
-  isActive  Boolean    @default(true)
-  timezone  String     @default("Africa/Accra")
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  User      User[]
-  Customer  Customer[]
+  id            String         @id @default(cuid())
+  name          String
+  slug          String         @unique
+  mobile        String         @unique
+  email         String         @unique
+  owner         String
+  isActive      Boolean        @default(true)
+  timezone      String         @default("Africa/Accra")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  User          User[]
+  Customer      Customer[]
+  SequenceTable SequenceTable?
+  Prefix        Prefix?
 
   @@index([slug])
 }
@@ -43,7 +45,7 @@ model User {
   role                 Role                @default(LOAN_OFFICER)
   lastLogin            DateTime?
   isActive             Boolean             @default(false)
-  tenant               Tenant              @relation(fields: [tenantId], references: [id],onDelete: Restrict)
+  tenant               Tenant              @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   tenantId             String
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
@@ -198,6 +200,25 @@ model KycDocument {
   @@index([customerId, documentType])
   @@index([status])
   @@index([s3Key])
+}
+
+model SequenceTable {
+  id           String @id @default(cuid())
+  lastSequence Int
+  tenant       Tenant @relation(fields: [tenantId], references: [id])
+  tenantId     String @unique
+
+  @@index([tenantId])
+}
+
+model Prefix {
+  id        String   @id @default(cuid())
+  prefix    String
+  code      String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId  String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Outbox {

@@ -151,7 +151,7 @@ export class UsersService {
                 throw new ConflictException("User with this email already exists");
             }
             const { user, rawToken } = await this.prisma.withTenant().$transaction(async (tx) => {
-
+                payload = { ...payload, isActive: true }
                 const user = await tx.user.create({
                     data: payload
                 })

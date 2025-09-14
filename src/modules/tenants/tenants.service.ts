@@ -99,6 +99,28 @@ export class TenantsService {
             this.logger.error(`Error occured ${err.message}`)
         }
     }
+
+    deleteTenant = async (tenantId: string) => {
+        try {
+            const tenant = await this.prisma.withTenant().tenant.findUnique({
+                where: {
+                    id: tenantId
+                }
+            })
+            if (!tenant) {
+                throw new NotFoundException("Tenant does not exist ")
+            }
+            await this.prisma.withTenant().tenant.delete({
+                where: {
+                    id: tenantId
+                }
+            })
+            return { success: true, message: "Tenant deleted successfully" }
+        } catch (error) {
+            const err = error as Error;
+            this.logger.error(`Error occured ${err.message}`)
+        }
+    }
 }
 
 

@@ -19,8 +19,8 @@ export class UsersController {
     }
 
     @Get('')
-    async getAllActiveUsers(@Query() query: { pageSize: number, page: number }) {
-        return this.userService.getAllActiveUsers(query.pageSize, query.page)
+    async getAllActiveUsers(@Query() pageSize: number, @Query() page: number) {
+        return this.userService.getAllActiveUsers(pageSize, page)
     }
 
     @Delete(":id")

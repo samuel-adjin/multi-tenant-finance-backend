@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { MagicLinkLoginStrategy } from '../../common/strategies/magic-link.strategy';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -39,7 +39,7 @@ export class AuthController {
 
     @Public()
     @Post("verify-account")
-    async verifyAccount(verifyToken: string) {
+    async verifyAccount(@Body() verifyToken: string) {
         return this.userAuthService.verifyUser(verifyToken);
     }
 }
