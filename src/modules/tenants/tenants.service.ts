@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../common/database/database.service';
 import { Prisma } from '@prisma/client';
+import { CreateTenantType, UpdateTenantType } from './tenant.schema';
 
 @Injectable()
 export class TenantsService {
@@ -8,14 +9,15 @@ export class TenantsService {
     private readonly logger: Logger = new Logger(TenantsService.name);
 
 
-    addTenant = async (payload: Prisma.TenantCreateInput) => {
+    addTenant = async (payload: CreateTenantType) => {
         try {
             if (!payload) {
                 throw new BadRequestException("Invalid payload");
             }
             const tenant = await this.prisma.byPassRls().tenant.create({
                 data: payload
-            })
+            },
+        )
             return { success: true, tenant }
         } catch (error) {
             const err = error as Error;
@@ -23,7 +25,7 @@ export class TenantsService {
         }
     }
 
-    updateTenantRecord = async (payload: Prisma.TenantUpdateInput, tenantId: string) => {
+    updateTenantRecord = async (payload: UpdateTenantType, tenantId: string) => {
         try {
             const tenant = await this.prisma.byPassRls().tenant.findUnique({
                 where: {

@@ -1,23 +1,27 @@
-import { Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
-import { Prisma } from '@prisma/client';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { createTenantSchema, CreateTenantType, updateTenantSchema, UpdateTenantType } from './tenant.schema';
+import { ParseCuidPipe } from '../../common/pipes/cuid-parse.pipe';
 
 @Controller('tenants')
 export class TenantsController {
     constructor(private readonly tenantService: TenantsService) { }
 
     @Post()
-    async addTenant(payload: Prisma.TenantCreateInput) {
+    @UsePipes(new ZodValidationPipe(createTenantSchema))
+    async addTenant(@Body() payload: CreateTenantType) {
         return this.tenantService.addTenant(payload);
     }
 
     @Put(":tenantId")
-    async updateTenantRecord(payload: Prisma.TenantUpdateInput, @Param("tenantId") tenantId: string) {
+    @UsePipes(new ZodValidationPipe(updateTenantSchema))
+    async updateTenantRecord(@Body() payload: UpdateTenantType, @Param("tenantId", ParseCuidPipe) tenantId: string) {
         return this.tenantService.updateTenantRecord(payload, tenantId)
     }
 
     @Get(":tenantId")
-    async getTenant(@Param("tenantId") tenantId: string) {
+    async getTenant(@Param("tenantId", ParseCuidPipe) tenantId: string) {
         return this.tenantService.getTenant(tenantId)
     }
 
@@ -27,7 +31,7 @@ export class TenantsController {
     }
 
     @Delete(":tenantId")
-    async deleteTenant(@Param("tenantId") tenantId: string) {
+    async deleteTenant(@Param("tenantId", ParseCuidPipe) tenantId: string) {
         return this.tenantService.deleteTenant(tenantId)
     }
 }

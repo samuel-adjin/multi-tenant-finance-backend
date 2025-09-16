@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { AppClsService } from '../../common/app-cls/app-cls.service';
 import { DatabaseService } from '../../common/database/database.service';
 import { EmailService } from '../../common/email/email.service';
-import { Prisma } from '@prisma/client';
 import token from "../../common/utils/crypto-token.utils"
+import { CreateUserType } from './user.schema';
 
 @Injectable()
 export class UsersService {
@@ -131,7 +131,7 @@ export class UsersService {
     }
 
 
-    createUser = async (payload: Prisma.UserCreateInput) => {
+    createUser = async (payload: CreateUserType) => {
         try {
             if (!payload) {
                 throw new BadRequestException("Invalid user payload")
@@ -151,9 +151,17 @@ export class UsersService {
                 throw new ConflictException("User with this email already exists");
             }
             const { user, rawToken } = await this.prisma.withTenant().$transaction(async (tx) => {
-                payload = { ...payload, isActive: true }
                 const user = await tx.user.create({
-                    data: payload
+                    data: {
+                        firstName: payload.firstName,
+                        otherNames: payload.otherNames,
+                        role: payload.role,
+                        mobile: payload.mobile,
+                        email: payload.email,
+                        tenantId,
+                        dob: payload.dob,
+                        isActive: true
+                    }
                 })
                 const rawToken = token.createRawToken();
                 const tokenHash = token.createSha(rawToken);
