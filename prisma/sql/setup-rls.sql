@@ -15,6 +15,10 @@ ALTER TABLE "Address" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "KycDocument" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "Sequence" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "Prefix" ENABLE ROW LEVEL SECURITY;
+
 -- User table policy
 CREATE POLICY user_tenant_isolation ON "User"
   USING (
@@ -161,4 +165,26 @@ CREATE POLICY kyc_document_tenant_isolation ON "KycDocument"
         OR current_setting('app.is_super', true) = 'true'
       )
     )
+  );
+
+-- Sequence table policy
+CREATE POLICY sequence_tenant_isolation ON "Sequence"
+  USING (
+    "tenantId"::text = current_setting('app.current_tenant_id', true)
+    OR current_setting('app.is_super', true) = 'true'
+  )
+  WITH CHECK (
+    "tenantId"::text = current_setting('app.current_tenant_id', true)
+    OR current_setting('app.is_super', true) = 'true'
+  );
+
+-- Prefix table policy
+CREATE POLICY prefix_tenant_isolation ON "Prefix"
+  USING (
+    "tenantId"::text = current_setting('app.current_tenant_id', true)
+    OR current_setting('app.is_super', true) = 'true'
+  )
+  WITH CHECK (
+    "tenantId"::text = current_setting('app.current_tenant_id', true)
+    OR current_setting('app.is_super', true) = 'true'
   );
