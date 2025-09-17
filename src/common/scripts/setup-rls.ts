@@ -21,6 +21,23 @@ function extractPolicyNamesFromSQL(sqlContent: string): string[] {
     return policyNames;
 }
 
+// Extract table names that should have RLS enabled from SQL file
+function extractTableNamesFromSQL(sqlContent: string): string[] {
+    const tableNames: string[] = [];
+    const lines = sqlContent.split('\n');
+
+    for (const line of lines) {
+        const trimmed = line.trim();
+        // Match ALTER TABLE ... ENABLE ROW LEVEL SECURITY statements
+        const match = /ALTER\s+TABLE\s+"?(\w+)"?\s+ENABLE\s+ROW\s+LEVEL\s+SECURITY/i.exec(trimmed);
+        if (match) {
+            tableNames.push(match[1]);
+        }
+    }
+
+    return tableNames;
+}
+
 // Improved SQL statement parsing
 function parseSQL(sqlContent: string): string[] {
     // Remove comments and normalize whitespace
@@ -76,15 +93,15 @@ async function checkPoliciesFromSQL(sqlContent: string) {
     return { existing: existingPolicies, expected: expectedPolicies };
 }
 
-// Check if RLS is enabled on tables
-async function checkRLSStatus() {
+// Check if RLS is enabled on tables - now dynamically based on SQL file
+async function checkRLSStatus(tableNames: string[]) {
     const rlsStatus = await prisma.$queryRaw<Array<{ table_name: string, row_level_security: boolean }>>`
         SELECT 
             tablename as table_name,
             rowsecurity as row_level_security
         FROM pg_tables 
         WHERE schemaname = 'public'
-        AND tablename IN ('User', 'Tenant', 'VerificationToken', 'Customer', 'CustomerBusiness', 'NextOfKin', 'Address', 'KycDocument')
+        AND tablename = ANY(${tableNames})
     `;
 
     return rlsStatus;
@@ -108,8 +125,12 @@ async function main() {
 
         console.log('Checking if RLS is already enabled...');
 
-        // Check current RLS status
-        const rlsStatus = await checkRLSStatus();
+        // Extract table names from SQL file dynamically
+        const expectedTables = extractTableNamesFromSQL(rlsSQL);
+        console.log('Tables expected to have RLS enabled:', expectedTables);
+
+        // Check current RLS status for all expected tables
+        const rlsStatus = await checkRLSStatus(expectedTables);
         console.log('Current RLS status:');
         rlsStatus.forEach(table => {
             console.log(`  - ${table.table_name}: ${table.row_level_security ? 'ENABLED' : 'DISABLED'}`);
@@ -174,8 +195,8 @@ async function main() {
         // Verify setup worked
         console.log('\nVerifying RLS setup...');
         const finalCheck = await checkPoliciesFromSQL(rlsSQL);
-        const finalRLSStatus = await checkRLSStatus();
-
+        const finalRLSStatus = await checkRLSStatus(expectedTables);
+        console.log("finalRLSStatus", finalRLSStatus);
         console.log('\nFinal RLS status:');
         finalRLSStatus.forEach(table => {
             console.log(`  - ${table.table_name}: ${table.row_level_security ? 'ENABLED' : 'DISABLED'}`);
