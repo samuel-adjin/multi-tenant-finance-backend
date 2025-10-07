@@ -1,7 +1,6 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../common/database/database.service';
-import { Prisma } from '@prisma/client';
-import { CreateTenantType, UpdateTenantType } from './tenant.schema';
+import { CreateTenantUserType, TenantType } from './tenant.schema';
 
 @Injectable()
 export class TenantsService {
@@ -9,23 +8,47 @@ export class TenantsService {
     private readonly logger: Logger = new Logger(TenantsService.name);
 
 
-    addTenant = async (payload: CreateTenantType) => {
+    addTenant = async (payload: TenantType) => {
         try {
             if (!payload) {
                 throw new BadRequestException("Invalid payload");
             }
+            const foundTenant = await this.prisma.byPassRls().tenant.findFirst({
+                where: {
+                    OR: [
+                        {
+                            email: {
+                                contains: payload.email,
+                                mode: "insensitive"
+                            },
+                            mobile: {
+                                contains: payload.mobile,
+                                mode: "insensitive"
+                            },
+                            slug: {
+                                contains: payload.slug,
+                                mode: "insensitive"
+                            }
+                        }
+                    ],
+                }
+            });
+            if (foundTenant) {
+                throw new ConflictException("User exists")
+            }
             const tenant = await this.prisma.byPassRls().tenant.create({
                 data: payload
             },
-        )
+            )
             return { success: true, tenant }
         } catch (error) {
             const err = error as Error;
-            this.logger.error(`Error occured ${err.message}`)
+            this.logger.error(`Error occurred ${err.message}`);
+            throw error;
         }
     }
 
-    updateTenantRecord = async (payload: UpdateTenantType, tenantId: string) => {
+    updateTenantRecord = async (payload: TenantType, tenantId: string) => {
         try {
             const tenant = await this.prisma.byPassRls().tenant.findUnique({
                 where: {
@@ -48,6 +71,7 @@ export class TenantsService {
         } catch (error) {
             const err = error as Error;
             this.logger.error(`Error occured ${err.message}`)
+            throw error;
         }
     }
 
@@ -65,6 +89,7 @@ export class TenantsService {
         } catch (error) {
             const err = error as Error;
             this.logger.error(`Error occured ${err.message}`)
+            throw error;
         }
     }
 
@@ -83,7 +108,7 @@ export class TenantsService {
                 skip,
                 take: pageSize
             })
-            const hasNextPage = page < totalCount
+            const hasNextPage = page < totalPages
             const hasPreviousPage = page > 1
             return {
                 success: true, items: tenants,
@@ -99,6 +124,7 @@ export class TenantsService {
         } catch (error) {
             const err = error as Error;
             this.logger.error(`Error occured ${err.message}`)
+            throw error;
         }
     }
 
@@ -121,6 +147,63 @@ export class TenantsService {
         } catch (error) {
             const err = error as Error;
             this.logger.error(`Error occured ${err.message}`)
+            throw error;
+        }
+    }
+
+    addTenantUser = async (payload: CreateTenantUserType) => {
+        try {
+            if (!payload || !payload.tenant || !payload.user) {
+                throw new BadRequestException("Invalid payload");
+            }
+            const tenant = payload.tenant
+            const user = payload.user
+
+            const foundTenant = await this.prisma.byPassRls().tenant.findFirst({
+                where: {
+                    OR: [
+                        {
+                            email: {
+                                contains: tenant.email,
+                                mode: "insensitive"
+                            },
+                            mobile: {
+                                contains: tenant.mobile,
+                                mode: "insensitive"
+                            },
+                            slug: {
+                                contains: tenant.slug,
+                                mode: "insensitive"
+                            }
+                        }
+                    ],
+                }
+            });
+            if (foundTenant) {
+                throw new ConflictException("User exists")
+            }
+            const tenantUser = await this.prisma.byPassRls().tenant.create({
+                data: {
+                    ...tenant,
+                    User: {
+                        create: {
+                            ...user,
+                            role: "ADMIN",
+                            isVerified: true,
+                            dob: new Date(),
+                            isActive: true,
+                        }
+                    }
+                },
+
+            },
+
+            )
+            return { success: true, tenantUser }
+        } catch (error) {
+            const err = error as Error;
+            this.logger.error(`Error occurred ${err.message}`);
+            throw error;
         }
     }
 }

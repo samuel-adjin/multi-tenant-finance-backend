@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { DatabaseService } from '../../../common/database/database.service';
-import token from "../../../common/utils/crypto-token.utils"
+import token from "../../../common/utils/hash-token.utils"
 import { verifyTokenType } from './user-auth.schema';
 
 export type ITokenPayload = {
@@ -61,12 +61,12 @@ export class UserAuthService {
         }
     }
 
-    verifyUser = async (verifyToken: verifyTokenType) => {
+    verifyUser = async (verifyToken: string) => {
         try {
-            if (!verifyToken.token?.trim()) {
+            if (!verifyToken?.trim()) {
                 throw new BadRequestException("Invalid or empty token")
             }
-            const tokenHash = token.createSha(verifyToken.token);
+            const tokenHash = token.createSha(verifyToken);
             const verificationToken = await this.prisma.byPassRls().verificationToken.findFirst({
                 where: {
                     tokenHash

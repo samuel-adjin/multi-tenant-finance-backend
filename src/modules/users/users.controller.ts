@@ -11,7 +11,7 @@ export class UsersController {
 
     }
 
-    @Post("create-user")
+    @Post("/create-user")
     @UsePipes(new ZodValidationPipe(CreateUserSchema))
     async createUser(@Body() payload: CreateUserType) {
         return this.userService.createUser(payload)

@@ -11,7 +11,6 @@ function extractPolicyNamesFromSQL(sqlContent: string): string[] {
 
     for (const line of lines) {
         const trimmed = line.trim();
-        // Match CREATE POLICY statements
         const match = /CREATE\s+POLICY\s+(\w+)\s+ON/i.exec(trimmed);
         if (match) {
             policyNames.push(match[1]);
@@ -28,7 +27,6 @@ function extractTableNamesFromSQL(sqlContent: string): string[] {
 
     for (const line of lines) {
         const trimmed = line.trim();
-        // Match ALTER TABLE ... ENABLE ROW LEVEL SECURITY statements
         const match = /ALTER\s+TABLE\s+"?(\w+)"?\s+ENABLE\s+ROW\s+LEVEL\s+SECURITY/i.exec(trimmed);
         if (match) {
             tableNames.push(match[1]);
@@ -38,13 +36,10 @@ function extractTableNamesFromSQL(sqlContent: string): string[] {
     return tableNames;
 }
 
-// Improved SQL statement parsing
 function parseSQL(sqlContent: string): string[] {
-    // Remove comments and normalize whitespace
     const cleanedSQL = sqlContent
         .split('\n')
         .map(line => {
-            // Remove line comments
             const commentIndex = line.indexOf('--');
             if (commentIndex !== -1) {
                 return line.substring(0, commentIndex);
@@ -52,17 +47,15 @@ function parseSQL(sqlContent: string): string[] {
             return line;
         })
         .join('\n')
-        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove block comments
+        .replace(/\/\*[\s\S]*?\*\//g, '') 
         .trim();
 
-    // Split on semicolons, but be more careful about it
     const statements = cleanedSQL
         .split(';')
         .map(stmt => stmt.trim())
         .filter(stmt => stmt.length > 0)
-        .map(stmt => stmt + ';'); // Add semicolon back
+        .map(stmt => stmt + ';');
 
-    // Remove the last semicolon if the last statement is empty
     if (statements[statements.length - 1] === ';') {
         statements.pop();
     }
@@ -70,7 +63,6 @@ function parseSQL(sqlContent: string): string[] {
     return statements;
 }
 
-// Check for specific policies defined in the SQL file
 async function checkPoliciesFromSQL(sqlContent: string) {
     const expectedPolicies = extractPolicyNamesFromSQL(sqlContent);
 
@@ -93,7 +85,7 @@ async function checkPoliciesFromSQL(sqlContent: string) {
     return { existing: existingPolicies, expected: expectedPolicies };
 }
 
-// Check if RLS is enabled on tables - now dynamically based on SQL file
+// Check if RLS is enabled on tables 
 async function checkRLSStatus(tableNames: string[]) {
     const rlsStatus = await prisma.$queryRaw<Array<{ table_name: string, row_level_security: boolean }>>`
         SELECT 
@@ -155,17 +147,14 @@ async function main() {
 
         console.log('Setting up Row Level Security...');
 
-        // Use improved SQL parsing
         const statements = parseSQL(rlsSQL);
 
         console.log(`Found ${statements.length} SQL statements to execute`);
 
-        // Log all statements for debugging
         statements.forEach((stmt, i) => {
             console.log(`Statement ${i + 1}: ${stmt.substring(0, 80)}${stmt.length > 80 ? '...' : ''}`);
         });
 
-        // Execute each statement separately
         for (let i = 0; i < statements.length; i++) {
             const statement = statements[i];
 
@@ -180,7 +169,6 @@ async function main() {
                 console.error(`Statement: ${statement}`);
                 console.error(`Error:`, error);
 
-                // Don't throw immediately, log and continue to see if it's a duplicate policy error
                 if (error instanceof Error && error.message.includes('already exists')) {
                     console.log(`Skipping duplicate policy/setting: ${error.message}`);
                     continue;
@@ -192,7 +180,7 @@ async function main() {
 
         console.log('\n RLS setup completed successfully');
 
-        // Verify setup worked
+        // Verify setup
         console.log('\nVerifying RLS setup...');
         const finalCheck = await checkPoliciesFromSQL(rlsSQL);
         const finalRLSStatus = await checkRLSStatus(expectedTables);

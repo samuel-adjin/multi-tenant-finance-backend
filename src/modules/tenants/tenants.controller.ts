@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
-import { createTenantSchema, CreateTenantType, updateTenantSchema, UpdateTenantType } from './tenant.schema';
+import { CreateTenantUserType, TenantType, createTenantUserSchema, tenantSchema } from './tenant.schema';
 import { ParseCuidPipe } from '../../common/pipes/cuid-parse.pipe';
 
 @Controller('tenants')
@@ -9,14 +9,19 @@ export class TenantsController {
     constructor(private readonly tenantService: TenantsService) { }
 
     @Post()
-    @UsePipes(new ZodValidationPipe(createTenantSchema))
-    async addTenant(@Body() payload: CreateTenantType) {
+    @UsePipes(new ZodValidationPipe(tenantSchema))
+    async addTenant(@Body() payload: TenantType) {
         return this.tenantService.addTenant(payload);
     }
 
+    @Post("/user")
+    @UsePipes(new ZodValidationPipe(createTenantUserSchema))
+    async addTenantUSer(@Body() payload: CreateTenantUserType) {
+        return this.tenantService.addTenantUser(payload);
+    }
+
     @Put(":tenantId")
-    @UsePipes(new ZodValidationPipe(updateTenantSchema))
-    async updateTenantRecord(@Body() payload: UpdateTenantType, @Param("tenantId", ParseCuidPipe) tenantId: string) {
+    async updateTenantRecord(@Param("tenantId", ParseCuidPipe) tenantId: string, @Body(new ZodValidationPipe(tenantSchema)) payload: TenantType) {
         return this.tenantService.updateTenantRecord(payload, tenantId)
     }
 
@@ -25,8 +30,8 @@ export class TenantsController {
         return this.tenantService.getTenant(tenantId)
     }
 
-    @Get()
-    async getTenants(@Query() pageSize: number, @Query() page: number) {
+    @Get("")
+    async getTenants(@Query("pageSize") pageSize: number, @Query("page") page: number) {
         return this.tenantService.getTenants(pageSize, page);
     }
 

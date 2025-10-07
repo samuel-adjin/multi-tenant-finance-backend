@@ -7,6 +7,7 @@ export class ParseCuidPipe implements PipeTransform<string, string> {
 
   transform(value: unknown, metadata: ArgumentMetadata) {
     try {
+      console.log("cuid")
       const parsedValue = this.cuidSchema.parse(value);
       return parsedValue;
     } catch (error) {

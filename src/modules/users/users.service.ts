@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppClsService } from '../../common/app-cls/app-cls.service';
 import { DatabaseService } from '../../common/database/database.service';
 import { EmailService } from '../../common/email/email.service';
-import token from "../../common/utils/crypto-token.utils"
+import token from "../../common/utils/hash-token.utils"
 import { CreateUserType } from './user.schema';
 
 @Injectable()
@@ -51,9 +51,13 @@ export class UsersService {
             pageSize = Math.max(pageSize, 1);
             page = Math.max(page, 1);
             const skip = (page - 1) * pageSize;
-            const totalCount = await this.prisma.withTenant().user.count();
+            const totalCount = await this.prisma.withTenant().user.count({
+                where:{
+                    isActive:true
+                }
+            });
             const totalPages = Math.ceil(totalCount / pageSize) || 1;
-            const hasNextPage = page < totalCount;
+            const hasNextPage = page < totalPages;
             const hasPreviousPage = page > 1;
             const users = await this.prisma.withTenant().user.findMany({
                 where: {
@@ -176,8 +180,8 @@ export class UsersService {
 
                 return { user, rawToken: encodeURIComponent(rawToken) }
             })
-            const host = this.config.get<string>('HOST_URL')
-            const href = `${host}/verify?token=${rawToken}`
+            const host = this.config.get<string>("CLIENT_URL") 
+            const href = `${host}/auth/verify?token=${rawToken}`
             await this.emailService.sendEmail({
                 to: user?.email,
                 subject: 'Account Verfication',

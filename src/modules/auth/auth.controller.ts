@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
 import { MagicLinkLoginStrategy } from '../../common/strategies/magic-link.strategy';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Public } from '../../common/decorators/public.decorator';
 import { UserAuthService } from './user-auth/user-auth.service';
-import { skipInterceptor } from '../../common/decorators/skipInterceptor.decorator';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { verifyTokenSchema, verifyTokenType } from './user-auth/user-auth.schema';
+import { SkipInterceptor } from '../../common/decorators/skipInterceptor.decorator';
 
 @Controller('auth/')
 export class AuthController {
@@ -16,7 +16,7 @@ export class AuthController {
     }
 
     @Public()
-    @skipInterceptor()
+    @SkipInterceptor()
     @Post('user/login')
     async login(@Req() req, @Res() res) {
         req.body.destination = { destination: req.body.destination, slug: req.body.slug }
@@ -39,11 +39,18 @@ export class AuthController {
         }
     }
 
+    // @Public()
+    // @Post("verify-account")
+    // @UsePipes(new ZodValidationPipe(verifyTokenSchema))
+    // async verifyAccount(@Body() verifyToken: verifyTokenType) {
+    //     return this.userAuthService.verifyUser(verifyToken);
+    // }
+
     @Public()
-    @Post("verify-account")
-    @UsePipes(new ZodValidationPipe(verifyTokenSchema))
-    async verifyAccount(@Body() verifyToken: verifyTokenType) {
-        return this.userAuthService.verifyUser(verifyToken);
+    @Get("verify")
+    @SkipInterceptor()
+    async verifyAccount(@Query("token") token: string) {
+        return this.userAuthService.verifyUser(token);
     }
 }
 

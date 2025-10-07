@@ -10,6 +10,11 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
     ) {
         super({
             errorFormat: 'pretty',
+            datasources: {
+                db: {
+                    url: process.env.APP_DATABASE_URL,
+                },
+            },
         })
     }
 
