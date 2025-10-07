@@ -1,98 +1,85 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Microfinance Backend - Multi-Tenant Application
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
+![BullMQ](https://img.shields.io/badge/BullMQ-FF6B6B?style=for-the-badge&logo=redis&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![AWS S3](https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)
+![RBAC](https://img.shields.io/badge/RBAC-2D3748?style=for-the-badge&logo=shield-check&logoColor=white)
+![RLS](https://img.shields.io/badge/RLS-1F2937?style=for-the-badge&logo=postgresql&logoColor=white)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A robust, scalable, and multi-tenant microfinance backend application built with NestJS, featuring queue management with BullMQ, AWS S3 for asset storage, magic link authentication, comprehensive role-based access control, and PostgreSQL Row-Level Security for ultimate data protection.
 
-## Description
+## 🚀 Project Overview
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This microfinance backend application is designed as a **multi-tenant SaaS solution** that enables multiple microfinance institutions (MFIs) to manage their financial operations securely and efficiently through isolated tenant spaces. The application leverages modern technologies to ensure scalability, reliability, and maintainability with defense-in-depth security.
 
-## Project setup
+### Key Characteristics
 
-```bash
-$ npm install
-```
+- **🏢 Multi-Tenant Architecture** - Secure data isolation between different microfinance institutions
+- **⚡ Queue-Driven Processing** - Asynchronous job handling for financial operations
+- **🔐 Magic Link Authentication** - Passwordless login system for enhanced security
+- **👮‍♂️ Role-Based Access Control** - Granular permissions and authorization
+- **🛡️ Row-Level Security** - Database-level tenant isolation with PostgreSQL RLS
+- **☁️ Cloud Asset Storage** - AWS S3 integration for document and file management
+- **📊 Financial Compliance** - Built-in support for financial regulations and reporting
 
-## Compile and run the project
+## ✨ Features
 
-```bash
-# development
-$ npm run start
+### Core Financial Services
+- **💰 Loan Management** - Complete loan lifecycle from application to closure
+- **💳 Transaction Processing** - Secure financial transactions with audit trails
+- **📅 Repayment Scheduling** - Automated installment tracking and reminders
+- **📈 Interest Calculations** - Configurable interest models and compounding
 
-# watch mode
-$ npm run start:dev
+### Authentication & Security
+- **🔑 Magic Link Authentication** - Passwordless email-based login
+- **👮‍♂️ RBAC System** - Comprehensive role-based access control
+- **🛡️ Row-Level Security** - Database-enforced tenant data isolation
+- **🔒 Tenant Isolation** - Complete data separation between institutions
+- **🔐 Session Management** - Secure token and session handling
 
-# production mode
-$ npm run start:prod
-```
+### Asset & Document Management
+- **📁 AWS S3 Integration** - Secure document storage and retrieval
+- **🖼️ File Processing** - Background processing for uploaded files
+- **🔍 Document Versioning** - Track changes to important documents
 
-## Run tests
+### Multi-Tenant Features
+- **🎨 Customizable Products** - Tenant-specific financial products and rules
+- **🏷️ Branding & Configuration** - White-label capabilities per tenant
+- **👥 User Management** - Role-based access control per institution
+- **🌐 Domain Customization** - Custom domains for each tenant
 
-```bash
-# unit tests
-$ npm run test
+### Queue Management with BullMQ
+- **🔄 Async Loan Processing** - Background processing of loan applications
+- **💸 Payment Reconciliation** - Scheduled payment verification and updates
+- **📢 Notification System** - Email and SMS notifications via queues
+- **📊 Report Generation** - Asynchronous financial report generation
+- **📦 Batch Operations** - Bulk transaction processing
+- **🖼️ Asset Processing** - Background file processing and optimization
 
-# e2e tests
-$ npm run test:e2e
+## 🛠 Technology Stack
 
-# test coverage
-$ npm run test:cov
-```
+| Category | Technologies |
+|----------|--------------|
+| **Framework** | NestJS with TypeScript |
+| **Queue Management** | BullMQ with Redis |
+| **Database** | PostgreSQL with TypeORM & RLS |
+| **Authentication** | JWT, Magic Links, 2FA |
+| **Authorization** | CASL for Role-Based Access Control |
+| **Security** | PostgreSQL Row-Level Security (RLS) |
+| **File Storage** | AWS S3 with CDN |
+| **Caching** | Redis for queue and session management |
+| **Email** | Nodemailer, SendGrid|
+| **Validation** | zod schema validation & Custom Financial Rules |
+| **Testing** | Jest with E2E and Unit Tests |
+| **Documentation** | Swagger/OpenAPI 3.0 |
 
-## Deployment
+## 📋 Prerequisites
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- **Node.js** 18+ 
+- **Redis**
+- **PostgreSQL** 12+ (with RLS support)
+- **AWS Account** (for S3)
+- **npm** 
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
